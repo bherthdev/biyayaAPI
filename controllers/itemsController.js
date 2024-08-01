@@ -1,6 +1,7 @@
 const Item = require('../models/Item')
-const User = require('../models/User')
 const asyncHandler = require('express-async-handler')
+const cloudinary = require("../utils/cloudinary");
+
 
 // @desc Get all notes 
 // @route GET /notes
@@ -11,7 +12,7 @@ const getAllItems = asyncHandler(async (req, res) => {
 
     // If no notes 
     if (!items?.length) {
-        return res.status(400).json({ message: 'No items found' })
+        return res.status(400).json({ message: 'No items found.' })
     }
 
 
@@ -22,8 +23,7 @@ const getAllItems = asyncHandler(async (req, res) => {
 // @route POST /notes
 // @access Private
 const createNewItem = asyncHandler(async (req, res) => {
-    const { name, description, qty,  price, category, status} = req.body
-
+    const { name, description, qty, price, category, status, image } = req.body
 
     // Confirm data
     if (!name || !description || !qty || !price || !category || !status) {
@@ -37,8 +37,22 @@ const createNewItem = asyncHandler(async (req, res) => {
         return res.status(409).json({ message: 'Duplicate note title' })
     }
 
+    const result = await cloudinary.uploader.upload(image);
+
+
+    const userObject = {
+        name,
+        description,
+        qty,
+        price,
+        category,
+        status,
+        avatar: result.secure_url,
+        cloudinary_id: result.public_id
+    }
+
     // Create and store the new user 
-    const item = await Item.create({  name, description, qty,  price, category, status})
+    const item = await Item.create(userObject)
 
     if (item) { // Created 
         return res.status(201).json({ message: 'New item created' })
@@ -52,8 +66,8 @@ const createNewItem = asyncHandler(async (req, res) => {
 // @route PATCH /notes
 // @access Private
 const updateItem = asyncHandler(async (req, res) => {
-    const { id, name, description, qty,  price, category, status } = req.body
-    
+    const { id, name, description, qty, price, category, status, image } = req.body
+
     // Confirm data
     if (!name || !description || !qty || !price || !category || !status) {
         return res.status(400).json({ message: 'All fields are required' })
@@ -71,7 +85,15 @@ const updateItem = asyncHandler(async (req, res) => {
 
     // Allow renaming of the original note 
     if (duplicate && duplicate?._id.toString() !== id) {
-        return res.status(409).json({ message: 'Duplicate item title' })
+        return res.status(409).json({ message: 'Duplicate item name' })
+    }
+
+    let result;
+    if (image) {
+        // Delete image from cloudinary
+        await cloudinary.uploader.destroy(item.cloudinary_id);
+        // Upload image to cloudinary
+        result = await cloudinary.uploader.upload(image);
     }
 
     item.name = name
@@ -80,6 +102,9 @@ const updateItem = asyncHandler(async (req, res) => {
     item.price = price
     item.category = category
     item.status = status
+    item.avatar = result?.secure_url || item.avatar;
+    item.cloudinary_id = result?.public_id || item.cloudinary_id;
+
 
     const updatedItem = await item.save()
 

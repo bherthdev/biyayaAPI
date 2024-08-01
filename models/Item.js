@@ -28,6 +28,12 @@ const itemSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        avatar: {
+            type: String,
+          },
+          cloudinary_id: {
+            type: String,
+          },
     },
     {
         timestamps: true
