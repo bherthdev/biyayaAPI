@@ -6,15 +6,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    email: {
-      type: String,
-      required: true,
-    },
     position: {
-      type: String,
-      required: true,
-    },
-    department: {
       type: String,
       required: true,
     },
@@ -40,15 +32,6 @@ const userSchema = new mongoose.Schema(
     cloudinary_id: {
       type: String,
     },
-    documents: [{
-      document_name: String,
-      document_no: String,
-      issue_date: String,
-      expiry_date: String,
-      document_format: String,
-      document_url: String,
-      document_cloud_id: String,
-    }]
   },
   {
     timestamps: true,
