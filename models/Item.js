@@ -43,7 +43,7 @@ const itemSchema = new mongoose.Schema(
 itemSchema.plugin(AutoIncrement, {
     inc_field: 'item',
     id: 'itemNums',
-    start_seq: 0
+    start_seq: 1
 })
 
 module.exports = mongoose.model('Item', itemSchema)
