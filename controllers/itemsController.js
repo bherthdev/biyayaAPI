@@ -19,14 +19,14 @@ const getAllItems = asyncHandler(async (req, res) => {
     res.json(items)
 })
 
-// @desc Create new note
-// @route POST /notes
+// @desc Create new items
+// @route POST /items
 // @access Private
 const createNewItem = asyncHandler(async (req, res) => {
-    const { name, description, qty, price, category, status, image } = req.body
+    const { name, description, stockMGT, qty, price, category, status, image } = req.body
 
     // Confirm data
-    if (!name || !description || !qty || !price || !category || !status) {
+    if (!name || !description || !price || !category || !status) {
         return res.status(400).json({ message: 'All fields are required' })
     }
 
@@ -34,7 +34,7 @@ const createNewItem = asyncHandler(async (req, res) => {
     const duplicate = await Item.findOne({ name }).lean().exec()
 
     if (duplicate) {
-        return res.status(409).json({ message: 'Duplicate note title' })
+        return res.status(409).json({ message: 'Duplicate item title' })
     }
 
     const result = await cloudinary.uploader.upload(image);
@@ -43,6 +43,7 @@ const createNewItem = asyncHandler(async (req, res) => {
     const userObject = {
         name,
         description,
+        stock_mgt: stockMGT,
         qty,
         price,
         category,
@@ -62,14 +63,14 @@ const createNewItem = asyncHandler(async (req, res) => {
 
 })
 
-// @desc Update a note
-// @route PATCH /notes
+// @desc Update a item
+// @route PATCH /items
 // @access Private
 const updateItem = asyncHandler(async (req, res) => {
-    const { id, name, description, qty, price, category, status, image } = req.body
+    const { id, name, description, stockMGT, qty, price, category, status, image } = req.body
 
     // Confirm data
-    if (!name || !description || !qty || !price || !category || !status) {
+    if (!name || !description || !price || !category || !status) {
         return res.status(400).json({ message: 'All fields are required' })
     }
 
@@ -98,6 +99,7 @@ const updateItem = asyncHandler(async (req, res) => {
 
     item.name = name
     item.description = description
+    item.stock_mgt = stockMGT
     item.qty = qty
     item.price = price
     item.category = category

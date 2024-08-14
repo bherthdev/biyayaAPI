@@ -3,7 +3,7 @@ const AutoIncrement = require('mongoose-sequence')(mongoose)
 
 const itemSchema = new mongoose.Schema(
     {
-        
+
         name: {
             type: String,
             required: true
@@ -11,6 +11,10 @@ const itemSchema = new mongoose.Schema(
         description: {
             type: String,
             required: true
+        },
+        stock_mgt: {
+            type: Boolean,
+            default: false,
         },
         qty: {
             type: String,
@@ -30,10 +34,10 @@ const itemSchema = new mongoose.Schema(
         },
         avatar: {
             type: String,
-          },
-          cloudinary_id: {
+        },
+        cloudinary_id: {
             type: String,
-          },
+        },
     },
     {
         timestamps: true
