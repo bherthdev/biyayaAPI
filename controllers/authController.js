@@ -28,6 +28,7 @@ const login = async (req, res) => {
                 "id": foundUser._id,
                 "name": foundUser.name,
                 "username": foundUser.username,
+                "position": foundUser.position,
                 "roles": foundUser.roles,
                 "avatar": foundUser.avatar,
             }
