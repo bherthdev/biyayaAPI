@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express')
+const useragent = require('express-useragent');
 const app = express()
 const path = require('path')
 const { logger, logEvents } = require('./middleware/logger')
@@ -14,6 +15,8 @@ const PORT = process.env.PORT || 3500
 console.log(process.env.NODE_ENV)
 
 connectDB()
+
+app.use(useragent.express());
 
 app.use(express.json({limit: '25mb'}));
 
@@ -33,6 +36,7 @@ app.use('/users', require('./routes/userRoutes'))
 app.use('/items', require('./routes/itemRoutes'))
 app.use('/notes', require('./routes/noteRoutes'))
 app.use('/orders', require('./routes/orderRoutes'))
+app.use('/logs', require('./routes/logRoutes'))
 
 app.all('*', (req, res) => {
     res.status(404)
