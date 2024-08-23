@@ -115,7 +115,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
 
     const result = await order.deleteOne()
 
-    const reply = `Order '${result.orderNo}' with ID ${result._id} deleted`
+    const reply = `Order '${order.orderNo}' with ID ${order._id} deleted`
 
     res.json(reply)
 })
