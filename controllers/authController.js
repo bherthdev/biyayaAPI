@@ -38,9 +38,23 @@ const login = async (req, res) => {
     const os = req.useragent.os;
     const platform = req.useragent.platform;
 
+    const options = {
+        timeZone: 'Asia/Manila', // Set the timezone to PST (Philippine Standard Time)
+        year: 'numeric',
+        day: 'numeric',
+        month: 'short',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true // Use 12-hour format with AM/PM
+    };
+    
+    const formattedDate = new Date().toLocaleDateString('en-US', options)
+    
+
     const userLogs = {
         name:  foundUser.name,
-        date:  new Date().toLocaleDateString("en-US", {year:'numeric' , day: 'numeric' , month: 'short' }) + ", " + new Date().toLocaleTimeString(),
+        date:  formattedDate,
         avatar: foundUser.avatar,
         deviceInfo: {
             device: device,
