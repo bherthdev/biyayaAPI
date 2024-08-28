@@ -37,6 +37,7 @@ app.use('/items', require('./routes/itemRoutes'))
 app.use('/notes', require('./routes/noteRoutes'))
 app.use('/orders', require('./routes/orderRoutes'))
 app.use('/logs', require('./routes/logRoutes'))
+app.use('/activities', require('./routes/activityRoutes'))
 
 app.all('*', (req, res) => {
     res.status(404)

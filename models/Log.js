@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const logSchema = new mongoose.Schema(
   {
-    
+
     name: {
       type: String,
       required: true,
@@ -24,14 +24,17 @@ const logSchema = new mongoose.Schema(
         isChrome: Boolean,
         isDesktop: Boolean,
         isWindows: Boolean,
+      },
+    },
+    seen: {
+      type: Boolean,
+      default: false
     },
   },
-  seen: {
-    type: Boolean,
-    default: false
-  },
-  },
-  
+  {
+    timestamps: true
+  }
+
 );
 
 module.exports = mongoose.model("Log", logSchema);
