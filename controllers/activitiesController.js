@@ -10,12 +10,6 @@ const getAllActivities = asyncHandler(async (req, res) => {
     // Get all activities from MongoDB
     const activities = await Activity.find().lean()
 
-    // If no activities 
-    if (!activities?.length) {
-        return res.status(400).json({ message: 'No activities found.' })
-    }
-
-
     res.json(activities)
 })
 

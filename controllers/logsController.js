@@ -10,12 +10,6 @@ const getAllLogs = asyncHandler(async (req, res) => {
     // Get all notes from MongoDB
     const logs = await Log.find().lean()
 
-    // If no notes 
-    if (!logs?.length) {
-        return res.status(400).json({ message: 'No logs found.' })
-    }
-
-
     res.json(logs)
 })
 
