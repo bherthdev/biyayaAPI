@@ -56,13 +56,15 @@ const login = async (req, res) => {
         name:  foundUser.name,
         date:  formattedDate,
         avatar: foundUser.avatar,
+        seen: false,
         deviceInfo: {
             device: device,
             browser: browser,
             os: os,
             platform: platform,
             other: trueValues,
-        }
+        },
+       
     }
 
     const accessToken = jwt.sign(

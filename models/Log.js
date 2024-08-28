@@ -26,6 +26,10 @@ const logSchema = new mongoose.Schema(
         isWindows: Boolean,
     },
   },
+  seen: {
+    type: Boolean,
+    default: false
+  },
   },
   
 );

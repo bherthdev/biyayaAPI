@@ -67,11 +67,11 @@ const createNewLog = asyncHandler(async (req, res) => {
 // @route PATCH /items
 // @access Private
 const updateLog = asyncHandler(async (req, res) => {
-    const { id, name, description, stockMGT, qty, price, category, status, image } = req.body
+    const { id, seen } = req.body
 
     // Confirm data
-    if (!name || !description || !price || !category || !status) {
-        return res.status(400).json({ message: 'All fields are required' })
+    if (seen) {
+        return res.status(400).json({ message: 'Seen field is required' })
     }
 
     // Confirm note exists to update
@@ -81,36 +81,17 @@ const updateLog = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'Log not found' })
     }
 
-    // Check for duplicate title
-    const duplicate = await Log.findOne({ name }).lean().exec()
 
-    // Allow renaming of the original note 
-    if (duplicate && duplicate?._id.toString() !== id) {
-        return res.status(409).json({ message: 'Duplicate log name' })
-    }
-
-    let result;
-    if (image) {
-        // Delete image from cloudinary
-        await cloudinary.uploader.destroy(log.cloudinary_id);
-        // Upload image to cloudinary
-        result = await cloudinary.uploader.upload(image);
-    }
-
-    log.name = name
-    log.description = description
-    log.stock_mgt = stockMGT
-    log.qty = qty
-    log.price = price
-    log.category = category
-    log.status = status
-    log.avatar = result?.secure_url || log.avatar;
-    log.cloudinary_id = result?.public_id || log.cloudinary_id;
+    log.name =  log.name
+    log.date =  log.date
+    log.avatar =  log.avatar
+    log.seen =  true
+    log.deviceInfo =  log.deviceInfo
 
 
     const updatedLog = await log.save()
 
-    res.json(`'${updatedLog.name}' updated`)
+    res.json(`log '${updatedLog.name}' updated`)
 })
 
 // @desc Delete a note
