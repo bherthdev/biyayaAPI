@@ -17,7 +17,7 @@ const getAllActivities = asyncHandler(async (req, res) => {
 // @route POST /activities
 // @access Private
 const createNewActivity = asyncHandler(async (req, res) => {
-    const { name, date, avatar, actionType, description, seen } = req.body
+    const { name, date, avatar, actionType, description, orderID, seen } = req.body
 
     // Confirm data
     if (!name || !date || !actionType || !description) {
@@ -31,14 +31,16 @@ const createNewActivity = asyncHandler(async (req, res) => {
         avatar,
         actionType,
         description,
-        seen
+        orderID,
+        seen,
     }
 
     // Create and store the new Activity 
     const activity = await Activity.create(activityObject)
 
+
     if (activity) { // Created 
-        return res.status(201).json({ message: 'New activity created' })
+        return res.status(201).json({ message: 'New activity created'})
     } else {
         return res.status(400).json({ message: 'Invalid activity data received' })
     }

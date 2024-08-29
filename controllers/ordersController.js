@@ -47,7 +47,7 @@ const createNewOrder = asyncHandler(async (req, res) => {
     const order = await Order.create({ user, orderNo, barista, orderType, dateTime, items, total, cash, change  })
 
     if (order) { // Created 
-        return res.status(201).json({ message: "New order " + orderNo + " saved." })
+        return res.status(201).json({ message: "New order " + orderNo + " saved.", orderID:  order?._id })
     } else {
         return res.status(400).json({ message: 'Invalid order data received' })
     }

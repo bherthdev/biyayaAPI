@@ -22,6 +22,9 @@ const activitySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    orderID: {
+      type: String,
+    },
     seen: {
       type: Boolean,
       default: false
