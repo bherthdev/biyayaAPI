@@ -75,6 +75,7 @@ const login = async (req, res) => {
                 "username": foundUser.username,
                 "position": foundUser.position,
                 "roles": foundUser.roles,
+                "dev": foundUser.dev,
                 "avatar": foundUser.avatar,
                 "biyaya_secret": process.env.BIYAYA_ADMIN_SECRET,
             }
@@ -137,6 +138,7 @@ const refresh = (req, res) => {
                         "username": foundUser.username,
                         "position": foundUser.position,
                         "roles": foundUser.roles,
+                        "dev": foundUser.dev,
                         "avatar": foundUser.avatar,
                         "biyaya_secret": process.env.BIYAYA_ADMIN_SECRET,
                     }
