@@ -1,5 +1,4 @@
 const User = require("../models/User");
-const Note = require("../models/Note");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const cloudinary = require("../utils/cloudinary");
@@ -54,6 +53,7 @@ const createNewUser = async (req, res) => {
     username,
     password: hashedPwd,
     roles,
+    dev: false,
     avatar: result.secure_url,
     cloudinary_id: result.public_id
   }
@@ -108,6 +108,7 @@ const updateUser = asyncHandler(async (req, res) => {
   user.position = position;
   user.username = username;
   user.roles = roles;
+  user.dev =  user?.dev,
   user.active = active;
   user.avatar = result?.secure_url || user.avatar;
   user.cloudinary_id = result?.public_id || user.cloudinary_id;
