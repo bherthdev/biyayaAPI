@@ -47,7 +47,7 @@ const createNewOrder = asyncHandler(async (req, res) => {
     const order = await Order.create({ user, orderNo, barista, orderType, dateTime, items, total, cash, change  })
 
     if (order) { // Created 
-        return res.status(201).json({ message: "New order " + orderNo + " saved.", orderID:  order?._id })
+        return res.status(201).json({ message: "New order " + orderNo + " saved.", orderTransaction:  order })
     } else {
         return res.status(400).json({ message: 'Invalid order data received' })
     }
@@ -58,11 +58,10 @@ const createNewOrder = asyncHandler(async (req, res) => {
 // @route PATCH /orders
 // @access Private
 const updateOrder = asyncHandler(async (req, res) => {
-    const { id, user, orderNo, barista, orderType, dateTime, items, total, cash, change  } = req.body
-
+    const { id, date } = req.body
     // Confirm data
-    if (!id || !user || !orderNo || !total ) {
-        return res.status(400).json({ message: 'All fields are required' })
+    if (!id || !date) {
+        return res.status(400).json({ message: 'Back order date is required' })
     }
 
     // Confirm order exists to update
@@ -72,27 +71,19 @@ const updateOrder = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'Order not found' })
     }
 
-    // Check for duplicate orderNo
-    const duplicate = await Order.findOne({ orderNo }).lean().exec()
-
-    // Allow renaming of the original order 
-    if (duplicate && duplicate?._id.toString() !== id) {
-        return res.status(409).json({ message: 'Duplicate order number.' })
-    }
-
-    order.user = user
-    order.orderNo = orderNo
-    order.barista = barista
-    order.orderType = orderType
-    order.dateTime = dateTime
-    order.items = items
-    order.total = total
-    order.cash = cash
-    order.change = change
+    order.user = order.user
+    order.orderNo = order.orderNo
+    order.barista = order.barista
+    order.orderType = order.orderType
+    order.dateTime = date
+    order.items = order.items
+    order.total = order.total
+    order.cash = order.cash
+    order.change = order.change
 
     const updatedOrder = await order.save()
 
-    res.json(`'${updatedOrder.orderNo}' updated`)
+    res.json(`Back date order ${updatedOrder.orderNo} is updated`)
 })
 
 // @desc Delete a order
