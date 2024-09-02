@@ -8,10 +8,10 @@ const asyncHandler = require('express-async-handler')
 const getAllOrders = asyncHandler(async (req, res) => {
     // Get all orders from MongoDB
     const orders = await Order.find().lean()
-
     // If no orders 
     if (!orders?.length) {
-        return res.status(400).json({ message: 'No orders found' })
+        // return res.status(400).json({ message: 'No orders found' })
+        return res.json(orders)
     }
 
     // Add username to each note before sending the response 
