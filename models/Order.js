@@ -32,15 +32,15 @@ const orderSchema = new mongoose.Schema(
             total: String,
         }],
         total: {
-            type: String,
+            type: Number,
             required: true
         },
         cash: {
-            type: String,
+            type: Number,
             required: true
         },
         change: {
-            type: String,
+            type: Number,
             required: true
         }
     },
