@@ -21,7 +21,7 @@ app.use(useragent.express());
 app.use(express.json({ limit: '25mb' }));
 app.use(logger);
 app.use(cors(corsOptions));
-connectDB();  // Or any valid URI for testing
+// connectDB();  // Or any valid URI for testing
 app.use(express.json());
 app.use(cookieParser());
 
