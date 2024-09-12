@@ -12,7 +12,8 @@ const getAllItems = asyncHandler(async (req, res) => {
 
     // If no notes 
     if (!items?.length) {
-        return res.status(400).json({ message: 'No items found.' })
+        // return res.status(400).json({ message: 'No items found.' })
+        return res.json(items)
     }
 
 

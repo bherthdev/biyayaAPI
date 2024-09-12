@@ -1,12 +1,23 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const allowedOrigins = require('./allowedOrigins');
 
-const connectDB = async () => {
+const connectDB = async (origin) => {
     try {
-        mongoose.set("strictQuery", false);
-        await mongoose.connect(process.env.DATABASE_URI)
-    } catch (err) {
-        console.log(err)
-    }
-}
+        let dbUri;
+        if (origin === allowedOrigins.production) {
+            dbUri = process.env.DATABASE_URI_PRODUCTION;
+        } else if (origin === allowedOrigins.preview) {
+            dbUri = process.env.DATABASE_URI_PREVIEW;
+        } else {
+            dbUri = process.env.DATABASE_URI_DEV; // Default for dev/local
+        }
 
-module.exports = connectDB
+        mongoose.set("strictQuery", false);
+        await mongoose.connect(dbUri);
+        console.log(`Connected to database: ${dbUri}`);
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+module.exports = connectDB;
