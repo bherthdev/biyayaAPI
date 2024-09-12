@@ -14,14 +14,12 @@ const PORT = process.env.PORT || 3500;
 
 console.log(process.env.NODE_ENV);
 
-
-
+connectDB(process.env.DATABASE_URI_DEV);
 
 app.use(useragent.express());
 app.use(express.json({ limit: '25mb' }));
 app.use(logger);
 app.use(cors(corsOptions));
-// connectDB();  // Or any valid URI for testing
 app.use(express.json());
 app.use(cookieParser());
 
