@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3500;
 
 console.log(process.env.NODE_ENV);
 
-connectDB(process.env.DATABASE_URI_PREVIEW);
+connectDB();
 
 app.use(useragent.express());
 app.use(express.json({ limit: '25mb' }));

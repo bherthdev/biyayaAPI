@@ -132,6 +132,10 @@ const deleteItem = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'Item not found' })
     }
 
+     // Delete item image from cloudinary
+  await cloudinary.uploader.destroy(item.cloudinary_id);
+ 
+
     const result = await item.deleteOne()
 
 
