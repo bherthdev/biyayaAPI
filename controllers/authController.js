@@ -1,4 +1,5 @@
 const User = require('../models/User')
+const Log = require('../models/Log')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -7,6 +8,8 @@ const jwt = require('jsonwebtoken')
 // @access Public
 const login = async (req, res) => {
     const { username, password } = req.body
+
+
 
     if (!username || !password) {
         return res.status(400).json({ message: 'All fields are required' })
@@ -22,14 +25,59 @@ const login = async (req, res) => {
 
     if (!match) return res.status(401).json({ message: 'Unauthorized' })
 
+    const trueValues = {};
+
+    // Iterate over req.useragent and filter properties with true value
+    for (const [key, value] of Object.entries(req.useragent)) {
+        if (value === true) {
+            trueValues[key] = value;
+        }
+    }
+    const device = req.useragent.isMobile ? 'Mobile' : req.useragent.isTablet ? 'Tablet' : 'Desktop';
+    const browser = req.useragent.browser;
+    const os = req.useragent.os;
+    const platform = req.useragent.platform;
+
+    const options = {
+        timeZone: 'Asia/Manila', // Set the timezone to PST (Philippine Standard Time)
+        year: 'numeric',
+        day: 'numeric',
+        month: 'short',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true // Use 12-hour format with AM/PM
+    };
+
+    const formattedDate = new Date().toLocaleDateString('en-US', options)
+
+
+    const userLogs = {
+        name: foundUser.name,
+        date: formattedDate,
+        avatar: foundUser.avatar,
+        seen: false,
+        deviceInfo: {
+            device: device,
+            browser: browser,
+            os: os,
+            platform: platform,
+            other: trueValues,
+        },
+
+    }
+
     const accessToken = jwt.sign(
         {
             "UserInfo": {
                 "id": foundUser._id,
                 "name": foundUser.name,
                 "username": foundUser.username,
+                "position": foundUser.position,
                 "roles": foundUser.roles,
+                "dev": foundUser.dev,
                 "avatar": foundUser.avatar,
+                "biyaya_secret": process.env.BIYAYA_ADMIN_SECRET,
             }
         },
         process.env.ACCESS_TOKEN_SECRET,
@@ -49,6 +97,14 @@ const login = async (req, res) => {
         sameSite: 'None', //cross-site cookie 
         maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
     })
+
+    if (!foundUser?.dev) {
+        try {
+            await Log.create(userLogs)
+        } catch (error) {
+            console.error('Failed to create log:', error);
+        }
+    }
 
     // Send accessToken containing username and roles 
     res.json({ accessToken })
@@ -80,8 +136,11 @@ const refresh = (req, res) => {
                         "id": foundUser._id,
                         "name": foundUser.name,
                         "username": foundUser.username,
+                        "position": foundUser.position,
                         "roles": foundUser.roles,
-                        "avatar": foundUser.avatar
+                        "dev": foundUser.dev,
+                        "avatar": foundUser.avatar,
+                        "biyaya_secret": process.env.BIYAYA_ADMIN_SECRET,
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
@@ -98,6 +157,7 @@ const refresh = (req, res) => {
 // @access Public - just to clear cookie if exists
 const logout = (req, res) => {
     const cookies = req.cookies
+
     if (!cookies?.jwt) return res.sendStatus(204) //No content
     res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
     res.json({ message: 'Cookie cleared' })

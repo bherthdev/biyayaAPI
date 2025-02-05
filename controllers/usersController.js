@@ -1,5 +1,4 @@
 const User = require("../models/User");
-const Note = require("../models/Note");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const cloudinary = require("../utils/cloudinary");
@@ -24,7 +23,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 // @route POST /users
 // @access Private
 const createNewUser = async (req, res) => {
-  const { name, email, department, position, username, password, roles, image, userDocs } = req.body;
+  const { name, position, username, password, roles, image } = req.body;
 
   // console.log(req.body)
 
@@ -50,15 +49,13 @@ const createNewUser = async (req, res) => {
 
   const userObject = {
     name,
-    email,
     position,
-    department,
     username,
     password: hashedPwd,
     roles,
+    dev: false,
     avatar: result.secure_url,
-    cloudinary_id: result.public_id,
-    documents: await docsController.addUserDocs(userDocs)
+    cloudinary_id: result.public_id
   }
   // Create and store new user
   const user = await User.create(userObject);
@@ -74,7 +71,7 @@ const createNewUser = async (req, res) => {
 // @route PATCH /users
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-  const { id, name, email, department, position, username, roles, active, password, image, userDocs } = req.body;
+  const { id, name, position, username, roles, active, password, image } = req.body;
 
 
   // Confirm data
@@ -108,15 +105,13 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 
   user.name = name;
-  user.email = email;
-  user.department = department;
   user.position = position;
   user.username = username;
   user.roles = roles;
+  user.dev =  user?.dev,
   user.active = active;
   user.avatar = result?.secure_url || user.avatar;
   user.cloudinary_id = result?.public_id || user.cloudinary_id;
-  user.documents = await docsController.updateUserDocs(userDocs, user.documents)
 
   if (password) {
     // Hash password
@@ -139,12 +134,6 @@ const deleteUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User ID Required" });
   }
 
-  // Does the user still have assigned notes?
-  const note = await Note.findOne({ user: id }).lean().exec();
-  if (note) {
-    return res.status(400).json({ message: "User has assigned notes" });
-  }
-
   // Does the user exist to delete?
   const user = await User.findById(id).exec();
 
@@ -152,21 +141,14 @@ const deleteUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User not found" });
   }
 
-  // Delete image from cloudinary
+  // Delete image avatar from cloudinary
   await cloudinary.uploader.destroy(user.cloudinary_id);
  
-  // Delete user docs from cloudinary
-  if (user.documents.length) {
-    user.documents.forEach(async (docs) => {
-      await cloudinary.uploader.destroy(docs.document_cloud_id);
-    })
-
-  }
-
 
   const result = await user.deleteOne();
 
-  const reply = `${result.name} successfully deleted.`;
+
+  const reply = `${user.name} successfully deleted.`;
 
   res.json(reply);
 });
